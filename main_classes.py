@@ -23,11 +23,16 @@ from datetime import datetime, timedelta
 
 class Field:  
     def __init__(self, value):
-        self.value = value
+        self.__value = value
 
     def __str__(self):
-        return str(self.value)
-    
+        return str(self.__value)
+
+    @property
+    def value(self):
+        return self.__value
+
+
 class Name(Field):
     def __init__(self, name):
         if not isinstance(name, str) or not name.strip():
@@ -37,13 +42,25 @@ class Name(Field):
 
 class Phone(Field):
     def __init__(self, value):
+        # delegate validation through the property setter
+        # (Field doesn't know about phone-specific rules)
+        self.value = value
+
+    @property
+    def value(self):
+            return self.__value
+        
+    @value.setter
+    def value(self, value):
+
         if not isinstance(value, str):
             raise ValueError("Phone number must be a string of 10 digits.")
         if not value.isdigit():
             raise ValueError("Phone number must contain only digits.")
         if len(value) != 10:
             raise ValueError("Phone number must be a string of 10 digits.")
-        super().__init__(value)
+            
+        self.__value = value
 
 class Birthday(Field):
     def __init__(self, value):
@@ -112,7 +129,7 @@ class AddressBook(UserDict):
             raise KeyError("Contact not found.")
 
     def get_upcoming_birthdays(self):    
-        today = datetime.today().date()
+        today = datetime.today().date() 
         upcoming = []
 
         for record in self.data.values():

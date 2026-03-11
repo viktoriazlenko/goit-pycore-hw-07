@@ -10,7 +10,10 @@ This is a simple assistant bot that can manage contacts.
  - "close" or "exit": The bot will say goodbye and exit the program.
 ''' 
  
-from main_classes import AddressBook, Record
+from main_classes import Record
+from data_load import save_data, load_data
+
+DATA_FILE = "addressbook.pkl"
 
 
 def input_error(func):
@@ -109,7 +112,7 @@ def birthdays(args, book):
 
 
 def main():
-    book = AddressBook()
+    book = load_data(DATA_FILE)
     commands = {
         "hello": say_hello,
         "add": add_contact,
@@ -132,6 +135,7 @@ def main():
             continue
 
         elif command in ["close", "exit"]:
+            save_data(book, DATA_FILE)
             print("Good bye!")
             break
 
